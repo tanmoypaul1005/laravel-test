@@ -16,12 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [HomeController::class, 'HomeIndex']);
-Route::get('/visitor', [VisitorController::class, 'VisitorIndex']);
-Route::get('/service', [ServicesController::class, 'ServiceIndex']);
-Route::get('/get-service-data', [ServicesController::class, 'getServiceData']);
-Route::get('/delete-services', [ServicesController::class, 'deleteServices']);
-Route::get('/get-service-details', [ServicesController::class, 'getServiceDetails']);
 
 Route::get('/home', function () {
     return view('home');
