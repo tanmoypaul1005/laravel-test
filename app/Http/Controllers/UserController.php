@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; // Import Hash facade
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 class UserController extends Controller
 
@@ -25,7 +28,7 @@ class UserController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => 'Validation error', 'errors' => $validator->errors()], 422);
+                return ResponseHelper::error('Validation error', 422);
             }
 
             $users = [];
@@ -53,10 +56,9 @@ class UserController extends Controller
 
                 $users[] = $user;
             }
-
-            return response()->json(['message' => 'Users added successfully', 'users' => $users]);
+            return ResponseHelper::success('Users added successfully', $users, 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+            return ResponseHelper::error('An error occurred', 500);
         }
     }
 
@@ -68,7 +70,7 @@ class UserController extends Controller
 
         // Check if the user exists
         if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+            return ResponseHelper::error('User not found', 404);
         }
 
         // Return user information without the password
@@ -95,7 +97,7 @@ class UserController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => 'Validation error', 'errors' => $validator->errors()], 422);
+                return ResponseHelper::error('Validation error', 422);
             }
 
             $csvFile = $request->file('csv_file');
@@ -110,7 +112,7 @@ class UserController extends Controller
             ]);
 
             if ($headerValidator->fails()) {
-                return response()->json(['message' => 'Invalid CSV format', 'errors' => $headerValidator->errors()], 422);
+                return ResponseHelper::error('Invalid CSV format', 422);
             }
 
             // Remove headers from CSV data
@@ -143,10 +145,9 @@ class UserController extends Controller
 
                 $users[] = $user;
             }
-
-            return response()->json(['message' => 'Users added successfully from CSV', 'users' => $users]);
+            return ResponseHelper::success('Users added successfully from CSV', $user,200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+            return ResponseHelper::error('An error occurred', 500);
         }
     }
 
@@ -161,9 +162,9 @@ class UserController extends Controller
 
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
-                $token = $user->createToken('authToken')->accessToken;
+                // $token = $user->createToken('authToken')->accessToken;
 
-                return response()->json(['message' => 'Login successful', 'token' => $token, 'user' => $user]);
+                return response()->json(['message' => 'Login successful', 'user' => $user]);
             }
 
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -179,10 +180,9 @@ class UserController extends Controller
     {
         try {
             $request->user()->token()->revoke();
-            
-            return response()->json(['message' => 'Logout successful']);
+            return ResponseHelper::success('Logout successful', [],200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+            return ResponseHelper::error('An error occurred', 500);
         }
     }
 
@@ -211,10 +211,9 @@ class UserController extends Controller
             }
 
             $users = $query->get();
-
-            return response()->json(['message' => 'Users filtered successfully', 'users' => $users]);
+            return ResponseHelper::success('An error occUsers filtered successfully', $users,200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+            return ResponseHelper::error('An error occurred', 500);
         }
     }
 
