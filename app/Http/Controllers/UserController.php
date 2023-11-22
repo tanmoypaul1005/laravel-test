@@ -15,6 +15,7 @@ class UserController extends Controller
     // add user
     public function addUsers(Request $request)
     {
+
         try {
             // Validate the incoming request data
             $validator = Validator::make($request->all(), [
